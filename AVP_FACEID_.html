@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>A.V.P. Trust School Election 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    /* HOME PAGE = TECH HEX BG */
+    background: url('https://i.ibb.co/wy5Nc2w/hex-tech-bg.jpg') center/cover no-repeat fixed;
+    background-size: cover;
+    image-rendering: crisp-edges;
+    overflow-x: hidden;
+    color: #ffffff;
+    transition: background 0.5s ease;
+}
+
+/* VOTING PAGES = SCHOOL BG */
+body.vote-bg {
+    background: url('https://i.ibb.co/zHSv3k7w/project1-1.png') center/cover no-repeat fixed!important;
+    background-size: cover;
+}
+
+#particle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.header-top {
+    position: fixed;
+    top: 30px;
+    left: 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+    animation: zoomInLogo 1s ease-out;
+}
+
+@keyframes zoomInLogo {
+    0% { transform: scale(0.5) translateX(-80px); opacity: 0; }
+    100% { transform: scale(1) translateX(0); opacity: 1; }
+}
+
+.school-logo {
+    height: 100px;
+    width: auto;
+    filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.8));
+    animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+    0% { filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.7)); }
+    100% { filter: drop-shadow(0 0 40px rgba(59, 130, 246, 1)); }
+}
+
+.school-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 30px rgba(59, 130, 246, 1);
+    line-height: 1.5;
+}
+
+.face-container {
+    position: absolute;
+    top: 50%;
+    left: 60px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: transparent!important;
+    border: none!important;
+    box-shadow: none!important;
+    padding: 0!important;
+}
+
+.face-scanner {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 5px solid #00d4ff;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(0, 212, 255, 0.8);
+    margin-bottom: 35px;
+    background: transparent;
+}
+
+.btn-enter {
+    width: 260px;
+    padding: 22px;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 800;
+    font-family: inherit;
+    background: linear-gradient(135deg, #0052cc 0%, #3b82f6 100%);
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 40px rgba(0, 102, 255, 0.7);
+}
+
+.btn-enter:hover:not(:disabled) {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0, 102, 255, 1);
+}
+
+button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #475569;
+    transform: none!important;
+}
+
+.admin-buttons {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    gap: 14px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.admin-buttons.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.btn-admin {
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    font-size: 14px;
+    padding: 15px 22px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    backdrop-filter: blur(15px);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-admin:hover {
+    background: rgba(59, 130, 246, 0.5);
+    border-color: #3b82f6;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+}
+
+/* VOTING PAGE BOX - MORE TRANSPARENT TO SEE BG */
+.page {
+    display: none;
+    width: 100%;
+    max-width: 900px;
+    margin: 130px auto 50px;
+    padding: 45px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 60px rgba(59, 130, 246, 0.4), 0 45px 90px rgba(0,0,0,0.7);
+}
+
+.page.active {
+    display: block;
+    animation: pageSlide 0.5s ease;
+}
+
+@keyframes pageSlide {
+    from { opacity: 0; transform: translateY(35px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.page h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #3b82f6;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+.subtitle {
+    color: #cbd5e1;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+.candidates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.candidate {
+    background: rgba(15, 23, 42, 0.8);
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    padding: 25px;
+    border-radius: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.candidate:hover {
+    background: rgba(15, 23, 42, 0.95);
+    border-color: #3b82f6;
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+}
+
+.candidate.selected {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 0 3px #3b82f6, 0 0 50px rgba(59, 130, 246, 0.7);
+}
+
+.candidate img {
+    width: 150px;
+    height: 150px;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 2px solid rgba(59, 130, 246, 0.4);
+}
+
+.candidate-info h3 {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #fff;
+}
+
+.candidate-info p {
+    font-size: 14px;
+    color: #3b82f6;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+.symbol {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 42px;
+    height: 42px;
+    background: #1e293b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 2px solid #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.btn-confirm {
+    width: 100%;
+    padding: 20px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0052cc, #3b82f6);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+}
+
+.btn-confirm:hover:not(:disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 0 50px rgba(59, 130, 246, 0.8);
+}
+
+.btn-back {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    color: #3b82f6;
+    padding: 16px 28px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.success-page {
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 90px;
+    color: #10b981;
+    margin-bottom: 30px;
+    animation: tickPop 0.7s ease;
+    text-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
+}
+
+@keyframes tickPop {
+    0% { transform: scale(0) rotate(-180deg); }
+    50% { transform: scale(1.5) rotate(20deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes scanLine {
+    0% { top: 0; }
+    50% { top: calc(100% - 5px); }
+    100% { top: 0; }
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background: #00ff9d;
+    animation: scanLine 2s linear infinite;
+    box-shadow: 0 0 15px #00ff9d;
+}
+
+/* POPUP */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(15, 23, 42, 0.98);
+    border: 2px solid #ff4444;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    z-index: 10000;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(255, 68, 68, 0.6);
+    transition: transform 0.3s ease;
+}
+
+.popup.show {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.popup h2 {
+    color: #ff4444;
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.popup p {
+    color: #cbd5e1;
+    font-size: 1.1rem;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.popup-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+@media (max-width: 968px) {
+.face-container { left: 30px; }
+.header-top { left: 25px; top: 25px; }
+.school-logo { height: 75px; }
+.school-name { font-size: 1.2rem; }
+.face-scanner { width: 320px; height: 320px; }
+.candidates-grid { grid-template-columns: 1fr; }
+.page { margin: 110px 20px 30px; padding: 35px 25px; }
+}
+</style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+
+<div class="popup-overlay" id="popupOverlay"></div>
+<div class="popup" id="popup">
+    <h2>🚫 Already Voted</h2>
+    <p>This face has already cast a vote.<br>One person = One vote only.</p>
+</div>
+
+<div class="header-top">
+    <img src="https://i.ibb.co/bg6SGtS4/Class-Pep-Rec-Logo.png" class="school-logo"/>
+    <div class="school-name">AVP TRUST MATRIC<br>HR.SEC.SCHOOL</div>
+</div>
+
+<div class="face-container" id="faceContainer">
+    <div class="face-scanner">
+        <video id="cam" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1);"></video>
+        <canvas id="captureCanvas" style="display:none;"></canvas>
+        <div class="scan-line"></div>
+        <div id="status" style="position:absolute;bottom:25px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);padding:12px 18px;border-radius:16px;font-size:15px;font-weight:600;">Starting...</div>
+    </div>
+    <button class="btn-enter" id="enterBtn" disabled>ENTER SYSTEM</button>
+</div>
+
+<div class="admin-buttons" id="adminBtns">
+<button class="btn-admin" onclick="showResults()">📊 Results</button>
+<button class="btn-admin" onclick="resetData()">⚠️ Reset</button>
+</div>
+
+<div class="page" id="page-headboy">
+<h1>Head Boy</h1>
+<p class="subtitle">Choose one nominee to continue</p>
+<div class="candidates-grid" id="grid-headboy"></div>
+<div class="button-group">
+<button class="btn-back" onclick="goToPage('page-face')">← Back</button>
+<button class="btn-confirm" id="btn-hb" disabled onclick="confirmVote('page-headgirl', this)">Confirm Vote</button>
+</div>
+</div>
+
+<div class="page" id="page-headgirl">
+<h1>Head Girl</h1>
+<p class="subtitle">Choose one nominee to continue</p>
+<div class="candidates-grid" id="grid-headgirl"></div>
+<div class="button-group">
+<button class="btn-back" onclick="goToPage('page-headboy')">← Back</button>
+<button class="btn-confirm" id="btn-hg" disabled onclick="confirmVote('page-sportscaptain', this)">Confirm Vote</button>
+</div>
+</div>
+
+<div class="page" id="page-sportscaptain">
+<h1>Sports Captain</h1>
+<p class="subtitle">Choose one nominee to continue</p>
+<div class="candidates-grid" id="grid-sportscaptain"></div>
+<div class="button-group">
+<button class="btn-back" onclick="goToPage('page-headgirl')">← Back</button>
+<button class="btn-confirm" id="btn-sc" disabled onclick="confirmVote('page-vicecaptain', this)">Confirm Vote</button>
+</div>
+</div>
+
+<div class="page" id="page-vicecaptain">
+<h1>Vice Captain</h1>
+<p class="subtitle">Final choice to authorize ballot</p>
+<div class="candidates-grid" id="grid-vicecaptain"></div>
+<div class="button-group">
+<button class="btn-back" onclick="goToPage('page-sportscaptain')">← Back</button>
+<button class="btn-confirm" id="btn-vc" disabled onclick="submitFinal()">Submit Final Ballot</button>
+</div>
+</div>
+
+<div class="page success-page" id="page-success">
+<div class="success-icon">✓</div>
+<h1>Ballot Successfully Logged</h1>
+<p class="subtitle">Redirecting to home in 3 seconds...</p>
+</div>
+
+<div class="page" id="page-results">
+<h1>Election Results</h1>
+<p class="subtitle">Live Vote Count</p>
+<div id="resultsBox"></div>
+<button class="btn-back" onclick="goToPage('page-face')" style="width:100%;margin-top:30px;">Exit Panel</button>
+</div>
+
+<script>
+const video = document.getElementById("cam");
+const status = document.getElementById("status");
+const enterBtn = document.getElementById("enterBtn");
+const adminBtns = document.getElementById("adminBtns");
+const faceContainer = document.getElementById("faceContainer");
+const popup = document.getElementById("popup");
+const popupOverlay = document.getElementById("popupOverlay");
+const captureCanvas = document.getElementById("captureCanvas");
+let verified = false;
+let currentFaceHash = null;
+
+// PARTICLES
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 12;
+        this.vy = (Math.random() - 0.5) * 12 - 3;
+        this.life = 50;
+        this.size = Math.random() * 4 + 2;
+        this.color = `hsl(${190 + Math.random() * 20}, 100%, 60%)`;
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.25;
+        this.life--;
+        this.size *= 0.96;
+    }
+    draw() {
+        ctx.globalAlpha = this.life / 50;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+    }
+}
+
+function shoot(x, y) {
+    for(let i = 0; i < 50; i++) particles.push(new Particle(x, y));
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => {
+        p.update();
+        p.draw();
+        return p.life > 0;
+    });
+    requestAnimationFrame(animate);
+}
+animate();
+
+function simpleHash(str) {
+    let hash = 0;
+    for(let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString();
+}
+
+function captureFace() {
+    captureCanvas.width = video.videoWidth;
+    captureCanvas.height = video.videoHeight;
+    const ctx2 = captureCanvas.getContext('2d');
+    ctx2.drawImage(video, 0, 0);
+    const faceData = captureCanvas.toDataURL('image/jpeg', 0.7);
+    currentFaceHash = simpleHash(faceData);
+    return currentFaceHash;
+}
+
+function hasVoted(hash) {
+    const votedHashes = JSON.parse(localStorage.getItem('votedHashes') || '[]');
+    return votedHashes.includes(hash);
+}
+
+function saveVotedHash(hash) {
+    const votedHashes = JSON.parse(localStorage.getItem('votedHashes') || '[]');
+    votedHashes.push(hash);
+    localStorage.setItem('votedHashes', JSON.stringify(votedHashes));
+}
+
+function showPopup() {
+    popupOverlay.classList.add('show');
+    popup.classList.add('show');
+    setTimeout(() => {
+        popupOverlay.classList.remove('show');
+        popup.classList.remove('show');
+    }, 3000);
+}
+
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        video.srcObject = stream;
+        status.innerText = "Scanning...";
+
+        setTimeout(() => {
+            const faceHash = captureFace();
+
+            if(hasVoted(faceHash)) {
+                status.innerText = "Already Voted ❌";
+                showPopup();
+                enterBtn.disabled = true;
+                enterBtn.style.opacity = "0.3";
+                return;
+            }
+
+            status.innerText = "Verified ✔";
+            enterBtn.disabled = false;
+            enterBtn.style.opacity = "1";
+            adminBtns.classList.add('show');
+            verified = true;
+            const rect = enterBtn.getBoundingClientRect();
+            shoot(rect.left + rect.width/2, rect.top);
+        }, 2500);
+    } catch(e) {
+        status.innerText = "Camera Blocked - Allow camera permission";
+    }
+}
+
+enterBtn.onclick = () => {
+    if(!verified) return;
+    saveVotedHash(currentFaceHash);
+    const rect = enterBtn.getBoundingClientRect();
+    shoot(rect.left + rect.width/2, rect.top);
+    document.body.classList.add('vote-bg'); // SWITCH TO SCHOOL BG
+    goToPage('page-headboy');
+};
+
+startCamera();
+
+const candidates = {
+    headboy: [
+        { name: "Vijay J.", team: "Alpha Team", symbol: "⚡", img: "https://i.ibb.co/214YWq6L/vijay.jpg" },
+        { name: "Suriya", team: "Beta Tigers", symbol: "🔥", img: "https://i.ibb.co/b5cNdPWS/surya.jpg" },
+        { name: "Dhanush", team: "Delta Falcons", symbol: "🏹", img: "https://i.ibb.co/YTd7NhX9/dhanush.jpg" },
+        { name: "Ajith", team: "Omega Knights", symbol: "🛡️", img: "https://i.ibb.co/0jxck9pS/ajith.jpg" }
+    ],
+    headgirl: [
+        { name: "Sai Pallavi", team: "Alpha Team", symbol: "⚡", img: "https://i.ibb.co/FbnKf65S/sai.jpg" },
+        { name: "Nana", team: "Beta Tigers", symbol: "🔥", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300" },
+        { name: "Mamitha biju", team: "Delta Falcons", symbol: "🏹", img: "https://i.ibb.co/sJsCqzCw/biju.jpg" },
+        { name: "Nayanthara", team: "Omega Knights", symbol: "🛡️", img: "https://i.ibb.co/C3H5fb4H/naya.jpg" }
+    ],
+    sportscaptain: [
+        { name: "Sivakarthikeyan", team: "Alpha Team", symbol: "⚡", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300" },
+        { name: "Vijay Sethupathi", team: "Beta Tigers", symbol: "🔥", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300" },
+        { name: "Karthi", team: "Delta Falcons", symbol: "🏹", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300" },
+        { name: "Chiyaan Vikram", team: "Omega Knights", symbol: "🛡️", img: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300" }
+    ],
+    vicecaptain: [
+        { name: "Anirudh", team: "Alpha Team", symbol: "⚡", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300" },
+        { name: "Silambarasan TR", team: "Beta Tigers", symbol: "🔥", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300" },
+        { name: "Jayam Ravi", team: "Delta Falcons", symbol: "🏹", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300" },
+        { name: "Vishal", team: "Omega Knights", symbol: "🛡️", img: "https://images.unsplash.com/photo-1504257404162-c3b9d6948e65?w=300" }
+    ]
+};
+
+let votes = { headboy: null, headgirl: null, sportscaptain: null, vicecaptain: null };
+
+function goToPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    if(id!== 'page-face') {
+        faceContainer.style.display = 'none';
+    } else {
+        faceContainer.style.display = 'flex';
+        document.body.classList.remove('vote-bg'); // BACK TO TECH BG
+    }
+
+    const role = id.replace('page-', '');
+    if(candidates[role]) loadCandidates(role);
+}
+
+function loadCandidates(role) {
+    const grid = document.getElementById(`grid-${role}`);
+    grid.innerHTML = '';
+
+    candidates[role].forEach((c, i) => {
+        const div = document.createElement('div');
+        div.className = 'candidate' + (votes[role] === i? ' selected' : '');
+        div.innerHTML = `
+            <div style="position:relative;">
+                <img src="${c.img}" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'">
+                <div class="symbol">${c.symbol}</div>
+            </div>
+            <div class="candidate-info">
+                <h3>${c.name}</h3>
+                <p>${c.team}</p>
+            </div>
+        `;
+        div.onclick = (e) => selectCandidate(role, div, i, e);
+        grid.appendChild(div);
+    });
+}
+
+function selectCandidate(role, el, idx, e) {
+    document.querySelectorAll(`#grid-${role}.candidate`).forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    votes[role] = idx;
+
+    const rect = el.getBoundingClientRect();
+    shoot(rect.left + rect.width/2, rect.top + rect.height/2);
+
+    const btnId = 'btn-' + (role === 'headboy'? 'hb' : role === 'headgirl'? 'hg' : role === 'sportscaptain'? 'sc' : 'vc');
+    document.getElementById(btnId).disabled = false;
+}
+
+function confirmVote(next, btn) {
+    const rect = btn.getBoundingClientRect();
+    shoot(rect.left + rect.width/2, rect.top);
+    goToPage(next);
+}
+
+function submitFinal() {
+    playSound();
+    Object.keys(votes).forEach(role => {
+        if(votes[role]!== null) {
+            const key = `vote_${role}_${votes[role]}`;
+            let count = parseInt(localStorage.getItem(key) || "0");
+            localStorage.setItem(key, count + 1);
+        }
+    });
+
+    goToPage('page-success');
+
+    setTimeout(() => {
+        resetAll();
+    }, 3000);
+}
+
+function resetAll() {
+    votes = { headboy: null, headgirl: null, sportscaptain: null, vicecaptain: null };
+    ['btn-hb', 'btn-hg', 'btn-sc', 'btn-vc'].forEach(id => {
+        document.getElementById(id).disabled = true;
+    });
+    goToPage('page-face');
+    if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+    adminBtns.classList.remove('show');
+    verified = false;
+    currentFaceHash = null;
+    startCamera();
+}
+
+function showResults() {
+    if(!verified) return;
+    let html = '';
+    Object.keys(candidates).forEach(role => {
+        html += `<div style="background:rgba(15,23,42,0.7);padding:20px;border-radius:16px;margin-bottom:20px;text-align:left;border:1px solid rgba(59,130,246,0.4);">
+            <h3 style="color:#3b82f6;margin-bottom:15px;text-transform:uppercase;font-size:14px;">${role.replace('head','Head ').replace('captain',' Captain')}</h3>`;
+
+        let total = 0;
+        candidates[role].forEach((c, i) => {
+            total += parseInt(localStorage.getItem(`vote_${role}_${i}`) || "0");
+        });
+
+        candidates[role].forEach((c, i) => {
+            let count = parseInt(localStorage.getItem(`vote_${role}_${i}`) || "0");
+            let percent = total > 0? Math.round((count/total)*100) : 0;
+            html += `
+                <div style="margin-bottom:14px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;">
+                        <span style="color:#cbd5e1;">${c.name}</span>
+                        <strong style="color:#3b82f6;">${count} votes (${percent}%)</strong>
+                    </div>
+                    <div style="width:100%;height:8px;background:rgba(59,130,246,0.15);border-radius:4px;overflow:hidden;">
+                        <div style="width:${percent}%;height:100%;background:linear-gradient(90deg,#0052cc,#3b82f6);border-radius:4px;box-shadow:0 0 10px rgba(59,130,246,0.6);"></div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+    });
+    document.getElementById('resultsBox').innerHTML = html;
+    goToPage('page-results');
+}
+
+function resetData() {
+    if(!verified) return;
+    if(prompt("⚠️ Enter Reset Password:") === "123") {
+        localStorage.clear();
+        alert("🗑️ All votes + face data cleared!");
+        resetAll();
+    } else {
+        alert("❌ Wrong Password");
+    }
+}
+</script>
+</body>
+</html>
